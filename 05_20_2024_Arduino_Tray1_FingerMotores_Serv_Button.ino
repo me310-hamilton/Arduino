@@ -28,7 +28,7 @@ namespace Events {
   const String FINISH = "FINISH";
 }
 
-int device = 0;
+int device = 5;
 String message = "Device On";
 
 // Display
@@ -112,7 +112,7 @@ void setup() {
   Wire.begin();
 
   // Init OLED display on bus number 0
-  TCA9548A(0);
+  TCA9548A(5);
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;);
@@ -121,7 +121,7 @@ void setup() {
   display.clearDisplay();
 
   // Init OLED display on bus number 1
-  TCA9548A(1);
+  TCA9548A(7);
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;);
@@ -129,8 +129,8 @@ void setup() {
   // Clear the buffer
   display.clearDisplay();
 
-  Display_LCD_Middle(0, message); 
-  Display_LCD_Middle(1, message);
+  Display_LCD_Middle(5, message); 
+  Display_LCD_Middle(7, message);
   
   // Initialize motor driver
   pinMode(STBY, OUTPUT);
@@ -169,8 +169,8 @@ void stopAllMotorsAndFinish() {
   setTrayState(TrayStates::STOPPED, "top");
   setTrayState(TrayStates::STOPPED, "bottom");
   setCoolingState(CoolingStates::IDLE);
-  Display_LCD_Middle(0, "STOPPED");
-  Display_LCD_Middle(1, "STOPPED");
+  Display_LCD_Middle(6, "STOPPED");
+  Display_LCD_Middle(7, "STOPPED");
 }
 
 void handleMessage(String serialMessage) {
@@ -238,10 +238,10 @@ void handleMessage(String serialMessage) {
 
 void handleExchangeEvent(String trayId, int mediaAmountInMl) {
   if (trayId=="top"){
-    device=0;
+    device=5;
   }
   else{
-    device=1;
+    device=7;
   }
   JsonDocument newState = state;
   
@@ -253,7 +253,7 @@ void handleExchangeEvent(String trayId, int mediaAmountInMl) {
 
   setTrayState(TrayStates::MEDIA_HEATING, trayId);
     //heating the media
-  message="Heating Media";
+  message="Heating   Media";
   Display_LCD_Middle(device,message);
   delay(1000);
 
@@ -263,18 +263,18 @@ void handleExchangeEvent(String trayId, int mediaAmountInMl) {
 
   setTrayState(TrayStates::EMPTYING_FLASK, trayId);
   message="Emptying Flask";
-  Display_LCD_Middle(device,"Emptying Flask");
+  Display_LCD_Middle(device,"Emptying  Flask");
     //tilt, empty, detilt flask
   delay(1000);
 
 //Tilting back the flask
-  servo1.write(0);
+  servo1.write(10);
   delay(1000);
 
   setTrayState(TrayStates::FILLING_FLASK,trayId);
   message="Filling Flask";
   fillFlask();
-  Display_LCD_Middle(device,"Filling Flask");
+  Display_LCD_Middle(device,"Filling   Flask");
     //fill flask
   delay(1000);
 
@@ -305,10 +305,10 @@ void handleSetupEvent(String trayId) {
   
   
   if (trayId=="top"){
-    device=0;
+    device=5;
   }
   else{
-    device=1;
+    device=7;
   }
   //start cooling system if not running already
   if(state["cooling"] == CoolingStates::IDLE) {
@@ -321,10 +321,10 @@ void handleSetupEvent(String trayId) {
 
 void handleFinishEvent(String trayId) {
   if (trayId=="top"){
-    device=0;
+    device=5;
   }
   else{
-    device=1;
+    device=7;
   }
   Display_LCD_Middle(device,"Finish"); 
   delay(250);
